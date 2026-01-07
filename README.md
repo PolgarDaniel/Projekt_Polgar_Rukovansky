@@ -49,15 +49,15 @@ Dataset **Soccer Fixtures & Results (OPTA)** bol zvolený preto, že:
 Pôvodná dátová štruktúra (entitno-relačný diagram):
 
 <p align="center">
-  <img src="" alt="ERD Schema">
+  <img src="img/ERD_dia.png" alt="ERD Schema">
   <br>
-  <em>Obrázok 1: ERD diagram zdrojového datasetu Soccer Fixtures</em>
+  <em>Obrázok 1: ERD diagram zdrojového datasetu</em>
 </p>
 
 ---
 # **Návrh dimenzionálneho modelu**
 
-Navrhnutá je **Star Schema**, pozostávajúca z jednej faktovej tabuľky a 5 dimenzií.
+Navrhnutá je **Schéma hviezdy**, pozostávajúca z jednej faktovej tabuľky a 5 dimenzií.
 
 ### Faktová tabuľka: `FACT_MATCH_RESULTS`
 - **Primárny kľúč:** `match_fact_id`
@@ -69,47 +69,46 @@ Navrhnutá je **Star Schema**, pozostávajúca z jednej faktovej tabuľky a 5 di
   - `match_rank_in_round` 
 
 ### Dimenzie
-
-- **DIM_DATE**
+- **`DIM_DATE`**
   - Obsah: dátum, deň, mesiac, rok, názov dňa
   - Vzťah: `date_id` vo faktovej tabuľke
   - Typ SCD: **Typ 0**
 
-- **DIM_TEAM**
+- **`DIM_TEAM`**
   - Obsah: názov tímu, skratka, časová platnosť (`valid_from`, `valid_to`, `is_current`)
   - Vzťah: `home_team_id`, `away_team_id`
   - Typ SCD: **Typ 2**
 
-- **DIM_COMPETITION**
+- **`DIM_COMPETITION`**
   - Obsah: názov súťaže, krajina, región
   - Vzťah: `competition_id`
   - Typ SCD: **Typ 0**
 
-- **DIM_LOCATION**
+- **`DIM_LOCATION`**
   - Obsah: názov štadióna, krajina, región, časová platnosť
   - Vzťah: `venue_id`
   - Typ SCD: **Typ 2**
 
-- **DIM_SEASON**
+- **`DIM_SEASON`**
   - Obsah: názov sezóny, identifikátor
   - Vzťah: `season_id`
   - Typ SCD: **Typ 0**
 
 ---
 
-### Star Schema diagram
+### Schéma hviezdy
 
 <p align="center">
-  <img src="Star_Schema.png" alt="Star Schema">
+  <img src="img/STAR_dia.png" alt="Star Schema">
   <br>
-  <em>Obrázok 2: Star Schema pre Soccer Fixtures dataset</em>
+  <em>Obrázok 2: Schéma hviezdy</em>
 </p>
 
 ---
 # **ELT proces datasetu**
 
 Tento dokument popisuje jednotlivé kroky ELT procesu pre dataset **Soccer Fixtures** zo **Snowflake Marketplace**.  
-Cieľom je pripraviť dáta pre analytiku futbalových zápasov pomocou dimenzionálneho modelu Star Schema.
+Cieľom je pripraviť dáta pre analytiku futbalových zápasov pomocou dimenzionálneho modelu schémy hviezdy.
 
 ---
 
@@ -153,7 +152,7 @@ FROM FIXTURES_STAGING_CLEAN;
 Prevedenie dát do správnych dátových typov
 Príprava na naplnenie dimenzií a faktovej tabuľky
 ## **Tvorba dimenzií**
-### **DIM_DATE:**
+### **DIM_DATE**
 ```sql
 CREATE OR REPLACE TABLE DIM_DATE AS
 SELECT DISTINCT
@@ -167,7 +166,7 @@ FROM FIXTURES_STAGING_TYPED;
 ```
 Typ SCD: Typ 0 (nemenná)
 Obsahuje dátumové informácie potrebné vo faktovej tabuľke
-### **DIM_TEAM:**
+### **DIM_TEAM**
 ```sql
 CREATE OR REPLACE TABLE DIM_TEAM AS
 SELECT
@@ -191,7 +190,7 @@ FROM (
 );
 ```
 Typ SCD: Typ 2 (historická platnosť tímov)
-### **DIM_COMPETITION:**
+### **DIM_COMPETITION**
 ```sql
 CREATE OR REPLACE TABLE DIM_COMPETITION AS
 SELECT DISTINCT
@@ -269,9 +268,9 @@ Použitie window functions:
 
 V tejto sekcii prezentujeme vybrané vizualizácie na základe dát z FACT_MATCH_RESULTS a dimenzií. Každý graf odpovedá na dôležité otázky o zápasoch, tímoch a góloch.
 <p align="center">
-  <img src="" alt="ERD Schema">
+  <img src="img/grafy.png" alt="ERD Schema">
   <br>
-  <em>Obrázok 3</em>
+  <em>Obrázok 3: Dashboard</em>
 </p>
 
 ## GRAF 1: Rozdelenie výsledkov futbalových zápasov
