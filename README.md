@@ -348,3 +348,4 @@ JOIN DIM_LOCATION v ON f.venue_id = v.venue_id
 GROUP BY v.venue_name, match_result
 ORDER BY stadium_name, match_result;
 ```
+Autori: Dániel Polgár, Ármin Rukovánsky
